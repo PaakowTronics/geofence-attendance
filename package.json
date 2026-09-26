@@ -1,5 +1,5 @@
 {
-  "name": "secure-timeclock",
+  "name": "geofence-attendance",
   "private": true,
   "version": "0.1.0",
   "description": "Server-authoritative employee timeclock with PostGIS geofencing.",

@@ -171,3 +171,120 @@ button.secondary {
     width: 100%;
   }
 }
+
+.muted {
+  color: #66717d;
+  font-size: 0.92rem;
+}
+
+.attendance-summary {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin: 22px 0 10px;
+}
+
+.attendance-summary > div {
+  padding: 14px;
+  border: 1px solid #e1e6eb;
+  border-radius: 10px;
+  background: #fbfcfd;
+}
+
+.attendance-summary span {
+  display: block;
+  font-size: 0.78rem;
+  color: #66717d;
+  margin-bottom: 6px;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+}
+
+.status-badge.met {
+  color: #166534;
+  background: #dcfce7;
+}
+
+.status-badge.not-met {
+  color: #991b1b;
+  background: #fee2e2;
+}
+
+.status-badge.pending {
+  color: #854d0e;
+  background: #fef9c3;
+}
+
+.full-secondary {
+  margin-top: 10px;
+}
+
+.management {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid #e1e6eb;
+}
+
+.report-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  margin: 16px 0;
+}
+
+select {
+  width: 100%;
+  min-height: 48px;
+  border: 1px solid #c9d1d9;
+  border-radius: 10px;
+  padding: 0 12px;
+  background: white;
+  font: inherit;
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  background: rgba(24, 33, 43, 0.48);
+  z-index: 1000;
+}
+
+.modal {
+  width: min(460px, 100%);
+  background: white;
+  border-radius: 16px;
+  padding: 26px;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.2);
+}
+
+.modal h2 {
+  margin-top: 0;
+}
+
+.modal-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+@media (max-width: 760px) {
+  .attendance-summary {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 520px) {
+  .report-grid,
+  .modal-actions {
+    grid-template-columns: 1fr;
+  }
+}

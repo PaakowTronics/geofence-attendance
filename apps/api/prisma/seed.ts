@@ -16,6 +16,7 @@ async function main() {
     where: { employeeId: '1000001' },
     update: {
       name: 'Demo Employee',
+      division: 'General',
       passwordHash,
       active: true,
       role: 'EMPLOYEE',
@@ -23,6 +24,7 @@ async function main() {
     create: {
       employeeId: '1000001',
       name: 'Demo Employee',
+      division: 'General',
       passwordHash,
       role: 'EMPLOYEE',
     },
@@ -40,6 +42,7 @@ async function main() {
     where: { employeeId: '9000001' },
     update: {
       name: 'Demo HR',
+      division: 'Administration',
       passwordHash: hrPasswordHash,
       active: true,
       role: 'HR',
@@ -47,23 +50,48 @@ async function main() {
     create: {
       employeeId: '9000001',
       name: 'Demo HR',
+      division: 'Administration',
       passwordHash: hrPasswordHash,
       role: 'HR',
     },
   });
 
+  const officeLatitude = process.env.OFFICE_LATITUDE;
+  const officeLongitude = process.env.OFFICE_LONGITUDE;
+  const officeRadius = Number(process.env.OFFICE_RADIUS_METERS);
+
+  if (!officeLatitude || !officeLongitude || !Number.isFinite(officeRadius) || officeRadius <= 0) {
+    throw new Error(
+      'OFFICE_LATITUDE, OFFICE_LONGITUDE and OFFICE_RADIUS_METERS are required for the seed.',
+    );
+  }
+
   await prisma.office.upsert({
     where: { id: '00000000-0000-0000-0000-000000000001' },
-    update: {},
+    update: {
+      latitude: officeLatitude,
+      longitude: officeLongitude,
+      radiusMeters: officeRadius,
+      maxGpsAccuracyMeters: Number(process.env.MAX_GPS_ACCURACY_METERS ?? 100),
+      maxLocationAgeSeconds: Number(process.env.MAX_LOCATION_AGE_SECONDS ?? 120),
+    },
     create: {
       id: '00000000-0000-0000-0000-000000000001',
-      name: 'Demo Office',
-      // Replace these fictional/demo coordinates before deployment.
-      latitude: 5.6037,
-      longitude: -0.1870,
-      radiusMeters: 100,
-      maxGpsAccuracyMeters: 100,
-      maxLocationAgeSeconds: 120,
+      name: 'Configured Office',
+      // ============================================================
+      // WORKPLACE GEOFENCE CONFIGURATION
+      // ============================================================
+      // Set OFFICE_LATITUDE and OFFICE_LONGITUDE to the workplace
+      // coordinates for the organization deploying this system.
+      // Set OFFICE_RADIUS_METERS to the permitted geofence radius.
+      // These values belong in the private deployment environment,
+      // not as real organizational coordinates in this public repo.
+      // ============================================================
+      latitude: officeLatitude,
+      longitude: officeLongitude,
+      radiusMeters: officeRadius,
+      maxGpsAccuracyMeters: Number(process.env.MAX_GPS_ACCURACY_METERS ?? 100),
+      maxLocationAgeSeconds: Number(process.env.MAX_LOCATION_AGE_SECONDS ?? 120),
     },
   });
 

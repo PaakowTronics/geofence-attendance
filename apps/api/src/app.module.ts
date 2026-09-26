@@ -7,6 +7,8 @@ import { AttendanceService } from './attendance/attendance.service';
 import { AuditController } from './audit/audit.controller';
 import { PrismaService } from './prisma.service';
 import { RedisService } from './redis.service';
+import { ReportsController } from './reports/reports.controller';
+import { ReportsService } from './reports/reports.service';
 
 @Module({
   imports: [
@@ -14,7 +16,7 @@ import { RedisService } from './redis.service';
       secret: process.env.JWT_ACCESS_SECRET,
     }),
   ],
-  controllers: [AuthController, AttendanceController, AuditController],
-  providers: [PrismaService, RedisService, AuthService, AttendanceService],
+  controllers: [AuthController, AttendanceController, AuditController, ReportsController],
+  providers: [PrismaService, RedisService, AuthService, AttendanceService, ReportsService],
 })
 export class AppModule {}
