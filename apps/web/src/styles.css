@@ -1,0 +1,173 @@
+* {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #f4f6f8;
+  color: #18212b;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+.shell {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+}
+
+.card {
+  width: min(560px, 100%);
+  background: white;
+  padding: 32px;
+  border-radius: 16px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
+}
+
+h1 {
+  margin-top: 0;
+}
+
+h2 {
+  font-size: 1.2rem;
+}
+
+form,
+label {
+  display: grid;
+  gap: 8px;
+}
+
+form {
+  gap: 18px;
+  margin-top: 24px;
+}
+
+input,
+button {
+  min-height: 48px;
+  border-radius: 10px;
+}
+
+input {
+  width: 100%;
+  border: 1px solid #c9d1d9;
+  padding: 0 12px;
+  font-size: 16px;
+}
+
+button {
+  width: 100%;
+  border: 0;
+  background: #18212b;
+  color: white;
+  padding: 0 18px;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+button.secondary {
+  width: auto;
+  background: transparent;
+  color: #18212b;
+  border: 1px solid #c9d1d9;
+}
+
+.topbar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.status,
+.message {
+  margin: 20px 0;
+}
+
+.feedback {
+  margin-top: 20px;
+  padding: 16px;
+  border: 1px solid #d9e0e7;
+  border-radius: 10px;
+  background: #f8fafc;
+}
+
+.feedback p {
+  margin-top: 6px;
+}
+
+.audit {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid #e1e6eb;
+}
+
+.audit-search {
+  display: flex;
+  gap: 8px;
+  margin: 16px 0;
+}
+
+.audit-search input {
+  flex: 1;
+}
+
+.audit-search button {
+  width: auto;
+}
+
+.audit-row {
+  padding: 12px 0;
+  border-bottom: 1px solid #e1e6eb;
+}
+
+.audit-row small {
+  display: block;
+  margin-top: 4px;
+}
+
+@media (max-width: 520px) {
+  .shell {
+    padding: 12px;
+    place-items: start center;
+  }
+
+  .card {
+    margin-top: 12px;
+    padding: 22px 18px;
+    border-radius: 12px;
+  }
+
+  .topbar {
+    flex-direction: column;
+  }
+
+  button.secondary {
+    width: 100%;
+  }
+
+  .audit-search {
+    flex-direction: column;
+  }
+
+  .audit-search button {
+    width: 100%;
+  }
+}

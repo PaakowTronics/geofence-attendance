@@ -1,0 +1,119 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum EmployeeRole {
+  EMPLOYEE
+  HR
+  ADMIN
+}
+
+enum AttendanceEventType {
+  CLOCK_IN
+  CLOCK_OUT
+}
+
+enum AttendanceResult {
+  ACCEPTED
+  REJECTED
+}
+
+model Employee {
+  id                 String              @id @default(uuid()) @db.Uuid
+  employeeId         String              @unique
+  name               String
+  passwordHash       String
+  active             Boolean             @default(true)
+  role               EmployeeRole        @default(EMPLOYEE)
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  attendanceSessions AttendanceSession[]
+  refreshTokens      RefreshToken[]
+  auditEvents        AttendanceEvidence[]
+  actorAuditEvents   AuditEvent[] @relation("AuditActor")
+  targetAuditEvents  AuditEvent[] @relation("AuditTarget")
+}
+
+model Office {
+  id                    String   @id @default(uuid()) @db.Uuid
+  name                  String
+  latitude              Decimal  @db.Decimal(10, 7)
+  longitude             Decimal  @db.Decimal(10, 7)
+  radiusMeters          Int
+  maxGpsAccuracyMeters  Int      @default(100)
+  maxLocationAgeSeconds Int      @default(120)
+  active                Boolean  @default(true)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+}
+
+model AttendanceSession {
+  id          String    @id @default(uuid()) @db.Uuid
+  employeeId  String    @db.Uuid
+  clockInAt   DateTime
+  clockOutAt  DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  employee Employee @relation(fields: [employeeId], references: [id], onDelete: Restrict)
+
+  @@index([employeeId, clockOutAt])
+}
+
+model AttendanceEvidence {
+  id                   String           @id @default(uuid()) @db.Uuid
+  employeeId           String           @db.Uuid
+  sessionId            String?          @db.Uuid
+  eventType            AttendanceEventType
+  result               AttendanceResult
+  serverTime           DateTime         @default(now())
+  latitude             Decimal?         @db.Decimal(10, 7)
+  longitude            Decimal?         @db.Decimal(10, 7)
+  accuracyMeters       Decimal?         @db.Decimal(10, 2)
+  locationTimestamp    DateTime?
+  distanceMeters       Decimal?         @db.Decimal(10, 2)
+  reason               String?
+  ipAddress            String?
+  userAgent            String?
+  createdAt            DateTime         @default(now())
+
+  employee Employee @relation(fields: [employeeId], references: [id], onDelete: Restrict)
+
+  @@index([employeeId, createdAt])
+}
+
+model RefreshToken {
+  id           String   @id @default(uuid()) @db.Uuid
+  employeeId   String   @db.Uuid
+  tokenHash    String   @unique
+  expiresAt    DateTime
+  revokedAt    DateTime?
+  createdAt    DateTime @default(now())
+
+  employee Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@index([employeeId, revokedAt])
+}
+
+
+model AuditEvent {
+  id                String           @id @default(uuid()) @db.Uuid
+  actorEmployeeId   String?          @db.Uuid
+  targetEmployeeId  String?          @db.Uuid
+  action            String
+  result            AttendanceResult?
+  reason            String?
+  metadata          Json?
+  createdAt         DateTime         @default(now())
+
+  actorEmployee  Employee? @relation("AuditActor", fields: [actorEmployeeId], references: [id], onDelete: SetNull)
+  targetEmployee Employee? @relation("AuditTarget", fields: [targetEmployeeId], references: [id], onDelete: SetNull)
+
+  @@index([targetEmployeeId, createdAt])
+  @@index([action, createdAt])
+}

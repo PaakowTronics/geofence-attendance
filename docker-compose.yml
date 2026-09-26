@@ -1,0 +1,69 @@
+services:
+  postgres:
+    image: postgis/postgis:16-3.4
+    environment:
+      POSTGRES_DB: timeclock
+      POSTGRES_USER: timeclock
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-timeclock_dev}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/001-postgis.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U timeclock -d timeclock"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  api:
+    build:
+      context: ./apps/api
+    environment:
+      DATABASE_URL: ${DATABASE_URL:-postgresql://timeclock:${POSTGRES_PASSWORD:-timeclock_dev}@postgres:5432/timeclock}
+      REDIS_URL: redis://redis:6379
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET:?Set JWT_ACCESS_SECRET in .env}
+      ACCESS_TOKEN_TTL: ${ACCESS_TOKEN_TTL:-15m}
+      REFRESH_TOKEN_TTL_DAYS: ${REFRESH_TOKEN_TTL_DAYS:-7}
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:8080}
+      API_PORT: 3000
+      NODE_ENV: ${NODE_ENV:-development}
+      MIN_PASSWORD_LENGTH: ${MIN_PASSWORD_LENGTH:-4}
+      MAX_GPS_ACCURACY_METERS: ${MAX_GPS_ACCURACY_METERS:-100}
+      MAX_LOCATION_AGE_SECONDS: ${MAX_LOCATION_AGE_SECONDS:-120}
+      DEFAULT_GEOFENCE_RADIUS_METERS: ${DEFAULT_GEOFENCE_RADIUS_METERS:-100}
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+  web:
+    build:
+      context: ./apps/web
+    environment:
+      VITE_API_URL: /api
+    ports:
+      - "5173:5173"
+    depends_on:
+      - api
+
+  nginx:
+    image: nginx:1.27-alpine
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - web
+      - api
+
+volumes:
+  postgres_data:

@@ -1,0 +1,14 @@
+{
+  "name": "secure-timeclock",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Server-authoritative employee timeclock with PostGIS geofencing.",
+  "workspaces": ["apps/api", "apps/web"],
+  "scripts": {
+    "dev": "docker compose up --build",
+    "test": "npm --workspace apps/api test",
+    "test:watch": "npm --workspace apps/api run test:watch",
+    "build": "npm --workspace apps/api run build && npm --workspace apps/web run build",
+    "seed": "npm --workspace apps/api run prisma:seed"
+  }
+}
